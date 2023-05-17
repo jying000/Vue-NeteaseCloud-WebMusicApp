@@ -1,6 +1,9 @@
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
   configureWebpack: {
+    "devServer": {  
+      "port": 9999,
+    },
     resolve: {
       alias: {
         'components': '@/components',

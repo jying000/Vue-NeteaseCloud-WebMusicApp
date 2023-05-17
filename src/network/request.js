@@ -21,7 +21,7 @@ export function request(config) {
     });
     install.interceptors.response.use(data => {
         ajaxTimer--;
-        if (ajaxTimer == 0) $store.commit('hiddenLoading');
+        $store.commit('hiddenLoading');
         return data;
     }, err => {
         $store.commit('hiddenLoading');

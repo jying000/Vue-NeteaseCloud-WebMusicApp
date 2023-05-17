@@ -14,7 +14,7 @@
     <transition name="player-side">
       <player-list
         class="player-list"
-        :music-list="musicList"
+        :music-list="playList"
         v-show="isShowList"
       />
     </transition>
@@ -124,7 +124,7 @@
 <script>
 const prefixCls = "player";
 import { theme } from "mixin/global/theme";
-import { _getLyric } from "network/detail";
+import { _getMusicUrl, _getLyric } from "network/detail";
 import { formatDate } from "utils/tool";
 
 import PlayerCover from "./player-cover";
@@ -163,7 +163,7 @@ export default {
       isShowLyric: false, //是否显示歌词,
       isShowList: false, //是否显示播放列表
       isPure: false, //是否是纯净模式
-      id:null,//接收传来的播放列表唯一标识
+      listId: null, //接收传来的播放列表唯一标识
     };
   },
   computed: {
@@ -197,22 +197,24 @@ export default {
   },
   mounted() {
     /**list是音乐列表，index是要播放的音乐在列表中的位置，path是当前播放音乐的路由路径,musicList是歌单信息*/
-    this.$bus.$on("playMusic", (playList, index, musicList,id) => {
-      this.id=id;
+    this.$bus.$on("playMusic", (playList, index, musicList, listId) => {
+      this.listId = listId;
       this.musicList = musicList;
       /**初始化播放列表 */
-      this.playList = [];
-      /**对playList进行处理 */
-      let transferList = [];
-      /**过滤掉没有音乐地址的歌曲 */
-      transferList = playList.filter((item) => {
-        return item.src;
-      });
+      this.playList = playList;
+      // this.playList = [];
+      // /**对playList进行处理 */
+      // let transferList = [];
+      // /**过滤掉没有音乐地址的歌曲 */
+      // transferList = playList.filter((item) => {
+      //   return item.src;
+      // });
       /**对数组进行排序 */
-      transferList = transferList.sort((a, b) => {
-        return a.index - b.index;
-      });
-      this.playList = transferList;
+      // transferList = transferList.sort((a, b) => {
+      //   return a.index - b.index;
+      // });
+      // this.playList = transferList;
+      // console.log(this.playList);
 
       /**在请求歌曲的时候可能有的歌曲不可用，或丢失。导致在播放器中的歌曲列表和页面展示存在差异，可能会出现指定的播放歌曲不服
        * 用一次查找解决问题
@@ -220,9 +222,33 @@ export default {
       this.setCurrentIndex(index);
     });
 
+    this.$bus.$on("moveMusic", (index) => {
+      console.log("移除：", index);
+      console.log(this.musicList.length, this.playList.length);
+      if (this.playList.length > 0) {
+        // this.playList.splice(index, 1);
+        if (index < this.currentIndex) {
+          this.currentIndex--;
+
+          this.$bus.$emit(
+            "Playing",
+            this.currentIndex,
+            this.playList[this.currentIndex].name,
+            this.listId,
+            this.playList[this.currentIndex].id
+          );
+        }
+        this.initMusic();
+        console.log("this.playList.length = ", this.playList.length);
+      } else {
+        this.currentIndex = 0;
+      }
+    });
+
     /**监听子组件播放列表双击切换歌曲 */
-    this.$bus.$on("PlayMusicListItem", index => {
-      this.setCurrentIndex(index);
+    this.$bus.$on("PlayMusicListItem", (index) => {
+      this.currentIndex = index;
+      this.initMusic();
     });
   },
   methods: {
@@ -285,6 +311,7 @@ export default {
     },
     /**监听音乐已开始播放 */
     musicPlaying() {
+      console.log("播放", this.currentIndex, new Date().getTime());
       this.isPlay = true;
       /**currentIndex并不等于歌单里音乐，music数组里每个属性index才对应歌单里的顺序 */
 
@@ -294,9 +321,10 @@ export default {
        */
       this.$bus.$emit(
         "Playing",
-        this.playList[this.currentIndex].index,
+        this.currentIndex,
         this.playList[this.currentIndex].name,
-        this.id
+        this.listId,
+        this.playList[this.currentIndex].id
       );
       if (this.$refs.player != null) this.$refs.player.isPlay = true;
     },
@@ -307,9 +335,9 @@ export default {
     },
     /**音乐出现错误 */
     musicErr() {
-      console.log("err");
-      this.$Toast.error("当前音频不可用");
-      this.currentIndex++;
+      console.log("err", this.currentIndex, new Date().getTime());
+      // this.$Toast.error("当前音频不可用");
+      // this.currentIndex++;
     },
     /**对音乐播放结束进行监视 */
     /**播放方式 */
@@ -317,9 +345,22 @@ export default {
       if (this.schemaIndex >= 2) this.schemaIndex = 0;
       else this.schemaIndex++;
     },
+
+    initMusic() {
+      // 开始获取下一首歌曲地址
+      let nextSong = this.playList[this.currentIndex];
+      if (nextSong != null && nextSong.src == null) {
+        console.log("src=null", nextSong);
+        _getMusicUrl(nextSong.id).then((res) => {
+          let url = res.data.data[0].url;
+          nextSong.src = url;
+          nextSong.time = formatDate(new Date(res.data.data[0].time), "mm:ss");
+          this.musicList[this.currentIndex].time = nextSong.time;
+        });
+      }
+    },
     /**监听音乐播放结束、并判断播放方式 */
     musicEnded() {
-      console.log("end:" + this.schemaIndex);
       switch (this.schemaIndex) {
         case 0:
           this.currentIndex >= this.playList.length - 1
@@ -333,17 +374,20 @@ export default {
           this.currentIndex = this.currentIndex;
           break;
       }
+      this.initMusic();
     },
     /**加载下一首音乐 */
     nextMusic() {
       if (this.currentIndex >= this.playList.length - 1) this.currentIndex = 0;
       else this.currentIndex++;
-      this.$refs.audio.src = this.playList[this.currentIndex].src;
+      this.initMusic();
+      // this.$refs.audio.src = this.playList[this.currentIndex].src;
     },
     preMusic() {
       if (this.currentIndex <= 0) this.currentIndex = this.playList.length - 1;
       else this.currentIndex--;
-      this.$refs.audio.src = this.playList[this.currentIndex].src;
+      this.initMusic();
+      // this.$refs.audio.src = this.playList[this.currentIndex].src;
     },
 
     /**设置浏览器音量 */

@@ -155,6 +155,8 @@ export default {
       _getSub(this.id, 30).then((res) => {
         this.subs = res.data.subscribers;
       });
+    
+      console.log(this.musicList);
     },
     /**获取歌单评论 */
     getRecommends() {

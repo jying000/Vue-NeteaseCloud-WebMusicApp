@@ -16,6 +16,7 @@
             index == lyricIndex ? `${'player-action-' + theme}` : '',
             middle ? 'player-action-middle' : '',
           ]"
+          style="height: 30px; line-height:30px;"
         >
           {{ line[1] }}
         </li>
@@ -149,6 +150,7 @@ export default {
 .player-lyric {
   padding: 0px 20px;
   overflow: hidden;
+  pointer-events: none;
 }
 .player-lyric ul {
   text-align: center;

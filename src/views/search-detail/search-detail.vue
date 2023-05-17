@@ -51,8 +51,13 @@ export default {
   },
   methods: {
     /**子路由 */
-    handleChildrenRouter(index) {},
+    handleChildrenRouter(index) {
+      // console.log(this.menuList[index].link);
+      // console.log(localStorage);
+      localStorage.setItem("searchType", this.menuList[index].link);
+    },
     forword(path, keywords = this.keywords) {
+      console.log(path, keywords);
       this.$router.push({
         path,
         query: {

@@ -22,12 +22,12 @@
 </template>
 <script>
 import { theme } from "mixin/global/theme";
-import {forcible} from "mixin/components/forcible-refresh"
+import { forcible } from "mixin/components/forcible-refresh";
 import SongList from "common/song-list/song-list";
 import Scroll from "common/scroll/Scroll";
 export default {
   name: "PlayerList",
-  mixins: [theme,forcible],
+  mixins: [theme, forcible],
   components: { SongList, Scroll },
   props: {
     musicList: {
@@ -37,7 +37,7 @@ export default {
   },
   data() {
     return {
-      lines: [true, false, true, true, false, true],
+      lines: [true, false, true, true, false, true, true],
     };
   },
   methods: {
@@ -48,7 +48,9 @@ export default {
   watch: {
     musicList() {
       this.$nextTick(() => {
-        this.$refs.scroll.refresh();
+        if (this.$refs && this.$refs.scroll) {
+          this.$refs.scroll.refresh();
+        }
       });
     },
   },

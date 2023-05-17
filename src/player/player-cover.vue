@@ -6,7 +6,7 @@
       @mouseleave="isShade = false"
       @click="togglePlayerPure"
     >
-      <b-avatar shape="square" size="60px" class="avatar">
+      <b-avatar shape="square" size="12vw" class="avatar">
         <img v-lazy="song.pic||song.picUrl" alt="" />
         <b-mask icon="iconfont icon-zuidahua" size="36px" v-show="isShade" />
       </b-avatar>
@@ -44,18 +44,18 @@ export default {
   height: 100%;
   position: absolute;
   z-index: 1;
-  top: -100%;
+  top: -15vw;
   left: 0px;
-  display: flex;
+  // display: flex;
   &-left {
     padding: 0px 10px 0px 5px;
-    height: 60px;
+    // height: 60px;
     .avatar {
       position: relative;
     }
   }
   &-right {
-    flex: 1;
+    // flex: 1;
     font-size: 13px;
     padding: 0px 10px;
     position: relative;
@@ -67,7 +67,7 @@ export default {
       overflow: hidden;
     }
     &-artist {
-      position: absolute;
+      // position: absolute;
       bottom: 0px;
     }
   }

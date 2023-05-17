@@ -38,7 +38,12 @@ export default {
   },
   methods: {
     goSearchDetailPage() {
-      this.$router.push(`/search-detail/${this.keywords}`);
+      // console.log(localStorage.getItem("searchType"));
+      let searchType = localStorage.getItem("searchType");
+      if (searchType == null) {
+        searchType = "";
+      }
+      this.$router.push(`/search-detail/${this.keywords}/${searchType}`);
       this.$refs.searchPoptip.hidden();
     },
     closePopover() {

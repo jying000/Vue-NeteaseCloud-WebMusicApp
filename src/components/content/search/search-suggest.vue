@@ -100,11 +100,14 @@ export default {
         return;
       }
       _Suggest(this.keywords).then((res) => {
-        const { albums, artists, playlists, songs } = res.data.result;
-        this.albums = albums;
-        this.artists = artists;
-        this.playlists = playlists;
-        this.songs = songs;
+        // console.log(res.data);
+        if (res.data != null && res.data.result != null) {
+          const { albums, artists, playlists, songs } = res.data.result;
+          this.albums = albums;
+          this.artists = artists;
+          this.playlists = playlists;
+          this.songs = songs;
+        }
       });
     }, 500),
     /**处理搜索建议歌单点击 */

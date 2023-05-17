@@ -1,6 +1,6 @@
 <template>
   <div class="table-list" v-if="musicList.length">
-    <b-table  stripe :stripe-background-color="getStripeColor">
+    <b-table stripe :stripe-background-color="getStripeColor">
       <b-table-head
         slot="head"
         split
@@ -14,31 +14,28 @@
           <b-table-td v-if="lines[3]">歌手</b-table-td>
           <b-table-td v-if="lines[4]">专辑</b-table-td>
           <b-table-td width="120px" v-if="lines[5]">时长</b-table-td>
+          <b-table-td width="60px" v-if="lines[6]">移除</b-table-td>
         </b-table-tr>
       </b-table-head>
       <b-table-body slot="body" class="table-body">
         <b-table-tr
-          :class="[newsongs ? 'dance-music-table-tr-newsongs' : '']"
+          :class="[
+            newsongs ? 'dance-music-table-tr-newsongs' : '',
+            item.id == playMusicId && item.name == playName
+              ? `${'v-' + theme}`
+              : '',
+          ]"
           v-for="(item, index) in musicList"
           :key="index"
           @dblclick.native="handleDbclick(index)"
         >
           <b-table-td width="50px" v-if="lines[0]">
-            <span
-              v-show="
-                !(player
-                  ? index == playIndex && item.name == playName
-                  : id == playId && index == playIndex && item.name == playName)
-              "
-              >{{ getListIndex(index) }}</span
-            >
+            <span v-show="!(item.id == playMusicId && item.name == playName)">{{
+              getListIndex(index)
+            }}</span>
             <i
               class="iconfont icon-V"
-              v-show="
-                player
-                  ? index == playIndex && item.name == playName
-                  : id == playId && index == playIndex && item.name == playName
-              "
+              v-show="item.id == playMusicId && item.name == playName"
               :class="`${'v-' + theme}`"
             ></i>
           </b-table-td>
@@ -61,6 +58,14 @@
           }}</b-table-td>
           <b-table-td v-if="lines[4]">{{ item.album }}</b-table-td>
           <b-table-td width="120px" v-if="lines[5]">{{ item.time }}</b-table-td>
+          <b-table-td
+            width="60px"
+            v-if="lines[6]"
+            style="color: red"
+            @dblclick.stop.native
+            @click.self.native="moveMusic(index)"
+            >移除</b-table-td
+          >
         </b-table-tr>
       </b-table-body>
     </b-table>
@@ -82,7 +87,7 @@ export default {
     /**判断显示哪几列 */
     lines: {
       type: Array,
-      default: () => [true, true, true, true, true, true],
+      default: () => [true, true, true, true, true, true, false],
     },
     showHead: {
       type: Boolean,
@@ -107,7 +112,8 @@ export default {
     /**table-head split 颜色 */
     getSplitColor() {
       let splitColor = "";
-      splitColor = this.theme == "dark" ? "var(--dark-border-color)" : "var(--border)";
+      splitColor =
+        this.theme == "dark" ? "var(--dark-border-color)" : "var(--border)";
       return splitColor;
     },
     getLength() {
@@ -127,8 +133,13 @@ export default {
         this.$bus.$emit("PlayMusicListItem", index);
         return;
       }
-      console.log("song-list:" + this.id);
       this.playMusic(index);
+    },
+    /** 移除不喜欢的歌曲 */
+    moveMusic(index) {
+      // console.log(index, this);
+      this.musicList.splice(index, 1);
+      this.$bus.$emit("moveMusic", index);
     },
     /**获取音乐列表下标 */
     getListIndex(index) {
@@ -192,5 +203,10 @@ export default {
       color: var(--main-color);
     }
   }
+}
+.vbestui-table-tr:hover {
+  background: darkseagreen !important;
+  font-size: 16px;
+  font-weight: bold;
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
-  <div class="search-mv">
-    <template v-if="mvCount">
-      <mv-list :mv-list="mvs" @refresh="handleRefresh" />
-    </template>
-    <template v-else>
-      <empty />
-    </template>
-  </div>
+    <div class="search-mv">
+      <template v-if="mvCount">
+        <mv-list :mv-list="mvs" @refresh="handleRefresh" />
+      </template>
+      <template v-else>
+        <empty />
+      </template>
+    </div>
 </template>
 <script>
 import { _Search } from "network/search";
@@ -30,9 +30,12 @@ export default {
   methods: {
     Search() {
       _Search(this.keywords, this.searchType).then((res) => {
-        this.mvs = res.data.result.mvs;
-        this.mvCount = this.mvs.length;
-        this.$emit("setData", this.mvCount, "MV");
+        // console.log("mv", res.data.result);
+        if (res.data != null && res.data.result != null) {
+          this.mvs = res.data.result.mvs;
+          this.mvCount = this.mvs.length;
+          this.$emit("setData", this.mvCount, "MV");
+        }
       });
     },
     handleRefresh() {
