@@ -349,22 +349,26 @@ export default {
     initMusic() {
       // 开始获取下一首歌曲地址
       let nextSong = this.playList[this.currentIndex];
-      if (nextSong != null && nextSong.src == null) {
-        console.log("src=null", nextSong);
-        _getMusicUrl(nextSong.id).then((res) => {
-          let url = res.data.data[0].url;
-          nextSong.src = url;
-          nextSong.time = formatDate(new Date(res.data.data[0].time), "mm:ss");
-          this.musicList[this.currentIndex].time = nextSong.time;
-        });
-      }
+      // 改为不管 nextSong.src 是否为 null，都要重新获取，不然循环播放列表时会因为超时而链接无法使用
+      console.log("nextSong = ", nextSong);
+      _getMusicUrl(nextSong).then((res) => {
+        let url = res.data.data[0].url;
+        nextSong.src = url;
+        nextSong.time = formatDate(new Date(res.data.data[0].time), "mm:ss");
+        this.musicList[this.currentIndex].time = nextSong.time;
+        if (url == null) {
+          this.$Toast.error(this.playList[this.currentIndex].name + " 播放地址为空");
+          console.error(this.playList[this.currentIndex].name + " 播放地址为空");
+          this.nextMusic(); // 此处考虑如果只有一首歌就会一直重复测试，是否再加一层判断？判断次数？
+        }
+      });
     },
     /**监听音乐播放结束、并判断播放方式 */
     musicEnded() {
       switch (this.schemaIndex) {
         case 0:
           this.currentIndex >= this.playList.length - 1
-            ? 0
+            ? (this.currentIndex = 0)
             : this.currentIndex++; //循环播放
           break;
         case 1:

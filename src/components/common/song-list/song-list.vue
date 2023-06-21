@@ -14,7 +14,8 @@
           <b-table-td v-if="lines[3]">歌手</b-table-td>
           <b-table-td v-if="lines[4]">专辑</b-table-td>
           <b-table-td width="120px" v-if="lines[5]">时长</b-table-td>
-          <b-table-td width="60px" v-if="lines[6]">移除</b-table-td>
+          <b-table-td width="60px" v-if="lines[6]">本地</b-table-td>
+          <b-table-td width="60px" v-if="lines[7]">移除</b-table-td>
         </b-table-tr>
       </b-table-head>
       <b-table-body slot="body" class="table-body">
@@ -58,14 +59,21 @@
           }}</b-table-td>
           <b-table-td v-if="lines[4]">{{ item.album }}</b-table-td>
           <b-table-td width="120px" v-if="lines[5]">{{ item.time }}</b-table-td>
-          <b-table-td
-            width="60px"
-            v-if="lines[6]"
+          <b-table-td width="60px" v-if="lines[6]" @dblclick.stop.native >
+            <span v-show="!item.local"
+              style="color: blue"
+              @click.self="clickDownMusic(index)">下载</span>
+            <i
+              class="iconfont icon-album-line"
+              v-show="item.local"
+              :class="`${'v-' + theme}`"
+            ></i>
+          </b-table-td>
+          <b-table-td width="60px" v-if="lines[7]"
             style="color: red"
             @dblclick.stop.native
             @click.self.native="moveMusic(index)"
-            >移除</b-table-td
-          >
+            >移除</b-table-td>
         </b-table-tr>
       </b-table-body>
     </b-table>
@@ -75,10 +83,11 @@
 import { randomStr } from "utils/random";
 import { theme } from "mixin/global/theme";
 import { playMusic } from "mixin/global/play-music";
+import { downMusic } from "mixin/global/down-music";
 import { playing } from "player/playing";
 export default {
   name: "TableList",
-  mixins: [theme, playing, playMusic],
+  mixins: [theme, playing, playMusic, downMusic],
   props: {
     musicList: {
       type: Array,
@@ -87,7 +96,7 @@ export default {
     /**判断显示哪几列 */
     lines: {
       type: Array,
-      default: () => [true, true, true, true, true, true, false],
+      default: () => [true, true, true, true, true, true, true, false],
     },
     showHead: {
       type: Boolean,
@@ -140,6 +149,11 @@ export default {
       // console.log(index, this);
       this.musicList.splice(index, 1);
       this.$bus.$emit("moveMusic", index);
+    },
+    /** 下载歌曲 */
+    clickDownMusic(index) {
+      // console.log(index, this.musicList[index]);
+      this.downMusic(index);
     },
     /**获取音乐列表下标 */
     getListIndex(index) {

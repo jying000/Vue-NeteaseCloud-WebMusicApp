@@ -1,6 +1,6 @@
 import { _getMusicUrl } from "network/detail";
 import { Song } from "player/init-songs";
-import {formatDate} from "utils/tool";
+import { formatDate } from "utils/tool";
 
 export const playMusic = {
     methods: {
@@ -21,7 +21,7 @@ export const playMusic = {
             //     musicList = this.musicList.slice(0, 199);
             // }
             // else 
-                musicList = this.musicList;
+            musicList = this.musicList;
             let url = null;
             let playList = [];
             for (let i = 0, length = musicList.length; i < length; i++) {
@@ -29,10 +29,20 @@ export const playMusic = {
                 let song = new Song(i, musicList[i], null, musicList[i].id);
                 playList.push(song);
             }
-            _getMusicUrl(musicList[index].id).then(res => {
+            _getMusicUrl(musicList[index]).then(res => {
                 url = res.data.data[0].url;
+                if (url == null) {
+                    this.$Toast.error(playList[index].name + " 播放地址为空");
+                    console.error(playList[index].name + " 播放地址为空");
+                }
                 playList[index].src = url;
-                playList[index].time = formatDate(new Date(res.data.data[0].time),'mm:ss');
+                if (res.data.data[0].local) {
+                    playList[index].time = res.data.data[0].time;
+                    playList[index].local = true;
+                    musicList[index].local = true;
+                } else {
+                    playList[index].time = formatDate(new Date(res.data.data[0].time), 'mm:ss');
+                }
                 musicList[index].time = playList[index].time;
                 /**全局播放事件
                  * @playList         处理后的播放列表

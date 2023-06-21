@@ -7,6 +7,7 @@ export class Song {
     this.pic = song.pic || song.picUrl;
     this.id = id;
     this.time = song.time;
+    this.local = false;
   }
 }
 

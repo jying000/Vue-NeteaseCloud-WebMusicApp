@@ -3,6 +3,15 @@ module.exports = {
   configureWebpack: {
     "devServer": {  
       "port": 9999,
+      proxy: {
+        '/files': {
+          target: 'http://localhost:3000', // 代理目标地址
+          changeOrigin: false, // 是否改变请求头中的 origin 字段
+          pathRewrite: {
+            '^/files': '' // 重写请求地址，去掉 /files 前缀
+          }
+        }
+      }
     },
     resolve: {
       alias: {

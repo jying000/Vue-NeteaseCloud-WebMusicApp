@@ -37,7 +37,7 @@ export default {
   },
   data() {
     return {
-      lines: [true, false, true, true, false, true, true],
+      lines: [true, false, true, true, false, true, true, true],
     };
   },
   methods: {
