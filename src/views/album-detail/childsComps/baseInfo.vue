@@ -4,7 +4,7 @@
       <img v-lazy="cover" alt />
     </div>
     <div class="right">
-      <h3>
+      <h3 v-bind:title="baseInfo.description">
         <b-tag color="var(--main-color)" plain>专辑</b-tag>
         {{ baseInfo.name }}
       </h3>
@@ -21,11 +21,11 @@
         </b-button>
         <b-button round class="button">
           <i class="iconfont icon-shoucang" />
-          收藏({{ albumDetail.subCount }})
+          喜欢({{ baseInfo.info.likedCount }})
         </b-button>
         <b-button round class="button">
           <i class="iconfont icon-fenxiang" />
-          分享({{ albumDetail.shareCount }})
+          分享({{ baseInfo.info.shareCount }})
         </b-button>
       </div>
       <div class="right-item">

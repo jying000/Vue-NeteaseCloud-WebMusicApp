@@ -151,6 +151,7 @@ export default {
   padding: 0px 20px;
   overflow: hidden;
   pointer-events: none;
+  z-index: 20240218;
 }
 .player-lyric ul {
   text-align: center;

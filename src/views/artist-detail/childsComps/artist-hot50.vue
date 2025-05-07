@@ -6,7 +6,7 @@
       </div>
       <div class="artist-hot50-right">
         <p>热门50首</p>
-        <song-list :music-list="musicList" :lines="lines" :show-head="false" />
+        <song-list :music-list="musicList" :show-head="true" />
       </div>
     </div>
   </scroll>

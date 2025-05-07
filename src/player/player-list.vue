@@ -4,9 +4,8 @@
     v-if="musicList && musicList.length"
     @mouseenter="handleRefresh"
   >
-    <scroll class="scroll" ref="scroll">
       <div class="player-list-top">
-        <h4>播放列表</h4>
+        <h4>播放列表数 {{musicList.length}}</h4>
         <b-button
           type="text"
           class="vbestui-iconfont icon-close"
@@ -16,6 +15,7 @@
           @click="closePlayerList"
         ></b-button>
       </div>
+    <scroll class="scroll" ref="scroll">
       <song-list :music-list="musicList" :lines="lines" player />
     </scroll>
   </div>
@@ -58,8 +58,8 @@ export default {
 </script>
 <style lang="less" scoped>
 .player-list {
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 490px;
   border-radius: 6px;
   overflow: hidden;
   position: absolute;
@@ -84,6 +84,6 @@ export default {
   top: 0px;
 }
 .scroll {
-  height: 500px;
+  height: 465px;
 }
 </style>

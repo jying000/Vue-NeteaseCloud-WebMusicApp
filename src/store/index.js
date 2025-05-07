@@ -11,8 +11,13 @@ export default new Vuex.Store({
     cookie: null,
     isloading:false,
     requestErr:false,
+    resource: "netease"
   },
   mutations: {
+    setResource(state, source) {
+      state.source = source;
+      localStorage.setItem("source", source);
+    },
     setTheme(state, theme) {
       state.theme = theme;
       localStorage.setItem('theme', theme);
@@ -36,6 +41,12 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    getResource(state) {
+      if(localStorage.getItem("source")) {
+        state.source = localStorage.getItem("source");
+      }
+      return state.source;
+    },
     getTheme(state) {
       if (localStorage.getItem('theme')) {
         state.theme = localStorage.getItem('theme');

@@ -15,7 +15,7 @@
           v-show="isShow == 'music'"
         />
         <!-- 歌曲评论 -->
-        <div class="detail-container-recommend" v-show="isShow == 'recommend'">
+        <!-- <div class="detail-container-recommend" v-show="isShow == 'recommend'">
           <recommends
           ref="recommend"
             :recommends="recommends"
@@ -30,11 +30,11 @@
               @current-change="onPageChange"
             />
           </div>
-        </div>
-        <music-list-live
+        </div> -->
+        <!-- <music-list-live
           :subs="subs"
           v-show="isShow == 'sub'"
-        />
+        /> -->
       </div>
     </div>
   <!-- </scroll> -->
@@ -44,7 +44,7 @@ import {
   _getMusicListDetail,
   baseInfo,
   _getSongsDetail,
-  songDetail,
+  songDetail, songInfo,
   _getRecommends,
   _getSub,
 } from "network/detail";
@@ -136,25 +136,35 @@ export default {
       /**获取歌单评论数 */
       this.recommendsCount=res.data.playlist.commentCount ;
       let str = "评论(" + this.recommendsCount + ")";
-      this.list = ["歌曲列表", str, "收藏者"];
+      // this.list = ["歌曲列表", str, "收藏者"];
+      this.list = ["歌曲列表"];
 
       /**遍历查询歌单所有歌曲详情 */
       const trackIds = res.data.playlist.trackIds;
-      /**获取歌曲列表长度 */
-      this.length = trackIds.length;
-      for (let i = 0, length = trackIds.length; i < length; i++) {
-        _getSongsDetail(trackIds[i].id).then((res) => {
-          let song = new songDetail(res.data.songs);
-          this.musicList.push(song);
-        });
+      if(trackIds==null) {
+         // migu         
+        let list = res.data.playlist.list;
+        for (let i in list) {
+            let song = new songInfo(list[i]);
+            this.musicList.push(song);
+        }
+      } else {
+        /**获取歌曲列表长度 */
+        this.length = trackIds.length;
+        for (let i = 0, length = trackIds.length; i < length; i++) {
+          _getSongsDetail(trackIds[i].id).then((res) => {
+            let song = new songDetail(res.data.songs);
+            this.musicList.push(song);
+          });
+        }
       }
       /**获取歌单评论 */
-      this.getRecommends();
+      // this.getRecommends();
 
-      /**获取歌单收藏者 */
-      _getSub(this.id, 30).then((res) => {
-        this.subs = res.data.subscribers;
-      });
+      // /**获取歌单收藏者 */
+      // _getSub(this.id, 30).then((res) => {
+      //   this.subs = res.data.subscribers;
+      // });
     
       console.log(this.musicList);
     },

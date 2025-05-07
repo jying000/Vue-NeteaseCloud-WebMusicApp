@@ -6,7 +6,13 @@ export class Song {
     this.src = url;
     this.pic = song.pic || song.picUrl;
     this.id = id;
-    this.time = song.time;
+    this.copyrightId = song.copyrightId;
+    if (song.time == null || song.time=="-:-") {
+        this.time = "-:-"
+    } else {
+        this.time = song.time;
+    }
+    this.lyric = song.lyric;
     this.local = false;
   }
 }

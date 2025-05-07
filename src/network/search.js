@@ -22,7 +22,7 @@ export function _Search(keyword,type){
         url:'/search',
         params:{
             keywords:keyword,
-            type
+            type: type
         }
     })
 }

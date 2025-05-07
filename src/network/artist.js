@@ -1,4 +1,6 @@
-import {request} from './request'
+import {request} from './request';
+
+
 export function _getArtistDesc(id){
     return request({
         url:'/artist/desc',
@@ -22,7 +24,8 @@ export function _getArtistAlbum(id){
     return request({
         url:'/artist/album',
         params:{
-            id:id
+            id:id,
+            limit: 50
         }
     })
 }

@@ -86,7 +86,7 @@ export default {
     song: {
       immidiate: true,
       handler(song) {
-        if (song.id) this.getRecom();
+        // if (song.id) this.getRecom();
       },
     },
   },

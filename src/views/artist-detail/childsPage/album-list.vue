@@ -1,11 +1,11 @@
 <template>
   <div class="album-list">
-    <artist-hot50
+    <!-- <artist-hot50
       :id="id"
       @refresh="handleRefresh"
       @mouseenter.native="handleEnter"
       @mouseleave.native="handleLeave"
-    />
+    /> -->
     <album-detail
       v-for="(item, index) in hotAlbums"
       :key="index"

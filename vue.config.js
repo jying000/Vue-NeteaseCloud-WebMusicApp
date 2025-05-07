@@ -1,8 +1,11 @@
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
   configureWebpack: {
-    "devServer": {  
-      "port": 9999,
+    "devServer": {
+      client: {
+          overlay: false, // 禁用默认的错误覆盖层
+      },
+      port: 9999,
       proxy: {
         '/files': {
           target: 'http://localhost:3000', // 代理目标地址

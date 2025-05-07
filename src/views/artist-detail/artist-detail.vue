@@ -14,12 +14,12 @@
         @enter="handleEnter"
         @leave="handleLeave"
       />
-      <artist-mvs
+      <!-- <artist-mvs
         :show-artist="false"
         :line-num="6"
         :mv-list="mvList"
         v-show="isShow === 'MV'"
-      />
+      /> -->
       <artist-desc-detail
         :id="getArtistId"
         :name="artist.name"
@@ -56,7 +56,8 @@ export default {
   data() {
     return {
       artist: null,
-      list: ["专辑", "MV", "歌手详情", "相似歌手"],
+      // list: ["专辑", "MV", "歌手详情", "相似歌手"],
+      list: ["专辑", "歌手详情", "相似歌手"],
       isWheel: false, //是否禁用wheel
       isShow: "album",
       mvList: [],
@@ -64,7 +65,7 @@ export default {
   },
   created() {
     this.artist = this.$route.query.artist;
-    this.initRequest();
+    // this.initRequest();
   },
   computed: {
     /**获取歌曲初始数据 */
@@ -135,7 +136,7 @@ export default {
       if (this.$route.path.indexOf("artist-detail") > 0) {
         this.artist = this.$route.query.artist;
         this.reset();
-        this.initRequest();
+        // this.initRequest();
       }
     },
   },

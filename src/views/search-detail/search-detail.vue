@@ -55,6 +55,11 @@ export default {
       // console.log(this.menuList[index].link);
       // console.log(localStorage);
       localStorage.setItem("searchType", this.menuList[index].link);
+      this.count = 0;
+      this.searchType = this.menuList[index].content;
+      if(this.menuList[index].count!=null) {
+        this.count = this.menuList[index].count;
+      }
     },
     forword(path, keywords = this.keywords) {
       console.log(path, keywords);
@@ -72,6 +77,10 @@ export default {
     handlesetData(count, type) {
       this.count = count;
       this.searchType = type;
+      let map = this.menuList.find(item=> {return item.content == type});
+      if(map!=null) {
+        map.count = count;
+      }
     },
   },
   watch: {

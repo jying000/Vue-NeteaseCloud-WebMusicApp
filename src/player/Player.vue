@@ -1,5 +1,5 @@
 <template>
-  <div :class="playerClass">
+  <div :class="playerClass" v-if="playList.length">
     <!-- 播放器歌曲封面 -->
     <player-cover :song="playList[currentIndex]" />
     <lyric
@@ -124,7 +124,7 @@
 <script>
 const prefixCls = "player";
 import { theme } from "mixin/global/theme";
-import { _getMusicUrl, _getLyric } from "network/detail";
+import { _getMusicUrl, _getSongsDetail, _getLyric } from "network/detail";
 import { formatDate } from "utils/tool";
 
 import PlayerCover from "./player-cover";
@@ -160,7 +160,7 @@ export default {
       isVolume: false, //是否静音true静音
       preVolumnPercent: 0, //在设置音量切换时暂时保存之前音量百分比
       lyric: null, //歌词
-      isShowLyric: false, //是否显示歌词,
+      isShowLyric: true, //是否显示歌词,
       isShowList: false, //是否显示播放列表
       isPure: false, //是否是纯净模式
       listId: null, //接收传来的播放列表唯一标识
@@ -229,18 +229,23 @@ export default {
         // this.playList.splice(index, 1);
         if (index < this.currentIndex) {
           this.currentIndex--;
-
-          this.$bus.$emit(
-            "Playing",
-            this.currentIndex,
-            this.playList[this.currentIndex].name,
-            this.listId,
-            this.playList[this.currentIndex].id
-          );
+        } else if (index == this.currentIndex) {
+          if (index == this.playList.length - 1) {
+            this.currentIndex = 0;
+          }
+          this.initMusic();
         }
-        this.initMusic();
+
+        this.$bus.$emit(
+          "Playing",
+          this.currentIndex,
+          this.playList[this.currentIndex].name,
+          this.listId,
+          this.playList[this.currentIndex].id
+        );
         console.log("this.playList.length = ", this.playList.length);
       } else {
+        this.isPlay = false;
         this.currentIndex = 0;
       }
     });
@@ -303,9 +308,22 @@ export default {
     },
     /**监听音乐加载 */
     playLoad() {
-      /**获取歌曲时长 */
+      /**获取歌曲时长 duration单位为秒 */
+      try {
       this.duration = this.$refs.audio.duration;
-      _getLyric(this.playList[this.currentIndex].id).then((res) => {
+      this.musicList[this.currentIndex].time =
+        formatDate(new Date(this.duration * 1000), "mm:ss") || "00:00";
+      this.playList[this.currentIndex].time =
+        formatDate(new Date(this.duration * 1000), "mm:ss") || "00:00";
+      } catch (error) {
+        console.log(error);
+      }
+      // console.log(this.playList[this.currentIndex].id, this.playList[this.currentIndex].copyrightId);
+      // 注意如果是本地歌曲也需要获取歌词
+      _getLyric(
+        this.playList[this.currentIndex].id,
+        this.playList[this.currentIndex].copyrightId
+      ).then((res) => {
         this.lyric = (res.data.lrc && res.data.lrc.lyric) || "暂无歌词";
       });
     },
@@ -352,14 +370,47 @@ export default {
       // 改为不管 nextSong.src 是否为 null，都要重新获取，不然循环播放列表时会因为超时而链接无法使用
       console.log("nextSong = ", nextSong);
       _getMusicUrl(nextSong).then((res) => {
-        let url = res.data.data[0].url;
-        nextSong.src = url;
-        nextSong.time = formatDate(new Date(res.data.data[0].time), "mm:ss");
+        let url = res.data.data[0].url || res.data.data[0].src;
+        nextSong.src = nextSong.url = url;
+
+        if (res.data.data[0].local == true) {
+          nextSong.time = res.data.data[0].time;
+          nextSong.local = true;
+          this.musicList[this.currentIndex].local = true;
+        } else {
+          nextSong.local = false;
+          this.musicList[this.currentIndex].local = false;
+          if (
+            res.data.data[0].time == null ||
+            res.data.data[0].time == "-:-" ||
+            res.data.data[0].time == "aN:aN"
+          ) {
+            nextSong.time = "-:-";
+          } else if (res.data.data[0].time.toString().indexOf(":") < 0) {
+            // 返回的neteasy的time为long类型，但是如果为migu已经存在的time是正常的time
+            nextSong.time = formatDate(
+              new Date(res.data.data[0].time),
+              "mm:ss"
+            );
+          }
+        }
         this.musicList[this.currentIndex].time = nextSong.time;
+        // 这里未考虑如果播放列表有删减会不会索引不一致问题
+
         if (url == null) {
-          this.$Toast.error(this.playList[this.currentIndex].name + " 播放地址为空");
-          console.error(this.playList[this.currentIndex].name + " 播放地址为空");
+          this.$Toast.error(nextSong.name + " 播放地址为空");
+          console.error(nextSong.name + " 播放地址为空");
           this.nextMusic(); // 此处考虑如果只有一首歌就会一直重复测试，是否再加一层判断？判断次数？
+        } else {
+          nextSong.updateTime = new Date().getTime(); // 记录当前播放时间
+          this.musicList[this.currentIndex].updateTime = new Date().getTime(); // 记录当前播放时间
+          if (nextSong.pic == null || nextSong.pic == "") {
+            // 获取图片地址
+            _getSongsDetail(nextSong.id).then((res) => {
+              nextSong.pic = res.data.songs[0].al.picUrl;
+              // 这里未考虑如何播放列表有删减会不会索引不一致问题，如何回传给列表musicList
+            });
+          }
         }
       });
     },

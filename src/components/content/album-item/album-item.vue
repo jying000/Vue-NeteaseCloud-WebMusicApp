@@ -10,6 +10,9 @@
     <div class="right">
       <div class="right-name">{{ album.name }}</div>
       <div class="right-item">
+        歌曲数：<span>{{ album.size }}</span>
+      </div>
+      <div class="right-item">
         发行时间：<span>{{ getTime }}</span>
       </div>
     </div>
@@ -38,7 +41,7 @@ export default {
       this.$router.push({
         path: "/album-detail",
         query: {
-          album: this.album,
+          id: this.album.id,
         },
       });
     },

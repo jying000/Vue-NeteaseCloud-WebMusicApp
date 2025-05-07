@@ -5,7 +5,7 @@
     </div>
     <div class="artist-album-detail-right">
       <p>{{ album.name }}</p>
-      <song-list :music-list="musicList" :lines="lines" :show-head="false" />
+      <song-list :music-list="musicList" :show-head="true" />
     </div>
   </div>
 </template>

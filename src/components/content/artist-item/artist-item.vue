@@ -12,8 +12,11 @@
       <div class="right-item">
         专辑数：<span>{{ artist.albumSize }}</span>
       </div>
-      <div class="right-item">
+      <div class="right-item" v-if="artist.mvSize">
         MV数：<span>{{ artist.mvSize }}</span>
+      </div>
+      <div class="right-item" v-if="artist.songCount">
+        歌曲数：<span>{{ artist.songCount }}</span>
       </div>
     </div>
   </div>
@@ -34,12 +37,13 @@ export default {
   },
   methods: {
     enterArtistDesc() {
-      this.$router.push({
-        path: "/artist-detail",
-        query: {
-          artist: this.artist,
-        },
-      });
+      this.$Toast.error("禁用歌手跳转，因为加载的信息太多了，内容无非包括专辑、MV、歌手资料，计划改为只折叠展示歌手信息。", 5000);
+      // this.$router.push({
+      //   path: "/artist-detail",
+      //   query: {
+      //     artist: this.artist,
+      //   },
+      // });
     },
   },
 };

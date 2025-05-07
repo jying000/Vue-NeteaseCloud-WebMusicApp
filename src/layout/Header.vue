@@ -44,6 +44,13 @@
         <Search />
       </div>
       <div class="right">
+        <label :class="[`${theme + '-item'}`]" style="margin-right: 30px">
+          <input type="radio" name="source" v-model="resource" value="netease" @change="changeResource" /> 网易云
+        </label>
+        <label :class="[`${theme + '-item'}`]" style="margin-right: 30px">
+          <input type="radio" name="source" v-model="resource" value="migu" @change="changeResource" /> 咪咕
+        </label>
+
         <b-avatar
           size="35px"
           class="avatar"
@@ -108,6 +115,7 @@ export default {
     return {
       isShow: false,
       isLogin: false,
+      resource: ""
     };
   },
   computed: {
@@ -118,7 +126,14 @@ export default {
       return this.$store.getters.getAvatar;
     },
   },
+  created() {
+    this.resource = this.$store.getters.getResource;
+  },
   methods: {
+    changeResource() {
+      console.log(this.resource);
+      this.$store.commit("setResource", this.resource);
+    },
     handleMouseEnter() {
       this.isShow = true;
     },

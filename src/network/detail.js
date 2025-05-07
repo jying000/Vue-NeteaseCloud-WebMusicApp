@@ -39,11 +39,12 @@ export function _musicRecommend(id, limit, offset) {
 }
 
 /**获取歌词 */
-export function _getLyric(id) {
+export function _getLyric(id, cid) {
     return request({
         url: '/lyric',
         params: {
-            id: id
+            id: id,
+            cid: cid
         }
     })
 }
@@ -103,6 +104,24 @@ export class songDetail {
         this.artist = songs[0].ar[0].name;
         this.pic = songs[0].al.picUrl;
         this.time = formatDate(new Date(songs[0].dt), 'mm:ss')
+    }
+}
+/**对歌曲数据进行封装 */
+export class songInfo {
+    constructor(song) {
+        this.id = song.id;
+        this.copyrightId = song.copyrightId;
+        this.name = song.name;
+        this.album = song.album == null ? '' : song.album.name;
+        this.pic = song.album == null ? '' : song.album.picUrl;
+        this.artist = song.artists[0].name;
+        this.url = song.url;
+        this.lyric = song.lyric;
+        if (song.duration == null) {
+            this.time = "-:-"
+        } else {
+            this.time = formatDate(new Date(song.duration), 'mm:ss');
+        }
     }
 }
 

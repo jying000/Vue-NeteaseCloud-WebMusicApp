@@ -141,7 +141,7 @@ export default {
       this.$emit("hidden");
     },
     /**处理搜索建议单曲点击
-     * 点击单曲直接逼疯
+     * 点击单曲直接播放
      */
     async handleSongsClick(index) {
       /**获取歌曲详情 */

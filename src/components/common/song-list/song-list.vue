@@ -11,9 +11,9 @@
           <b-table-td width="50px" v-if="lines[0]"></b-table-td>
           <b-table-td width="60px" v-if="lines[1]">操作</b-table-td>
           <b-table-td v-if="lines[2]">音乐标题</b-table-td>
-          <b-table-td v-if="lines[3]">歌手</b-table-td>
+          <b-table-td width="150px" v-if="lines[3]">歌手</b-table-td>
           <b-table-td v-if="lines[4]">专辑</b-table-td>
-          <b-table-td width="120px" v-if="lines[5]">时长</b-table-td>
+          <b-table-td width="80px" v-if="lines[5]">时长</b-table-td>
           <b-table-td width="60px" v-if="lines[6]">本地</b-table-td>
           <b-table-td width="60px" v-if="lines[7]">移除</b-table-td>
         </b-table-tr>
@@ -54,11 +54,11 @@
             </div>
           </b-table-td>
           <b-table-td v-if="lines[2]">{{ item.name }}</b-table-td>
-          <b-table-td v-if="lines[3]" class="table-list-body-artist">{{
+          <b-table-td width="150px" v-if="lines[3]" class="table-list-body-artist">{{
             item.artist
           }}</b-table-td>
           <b-table-td v-if="lines[4]">{{ item.album }}</b-table-td>
-          <b-table-td width="120px" v-if="lines[5]">{{ item.time }}</b-table-td>
+          <b-table-td width="80px" v-if="lines[5]">{{ item.time }}</b-table-td>
           <b-table-td width="60px" v-if="lines[6]" @dblclick.stop.native >
             <span v-show="!item.local"
               style="color: blue"
@@ -96,7 +96,7 @@ export default {
     /**判断显示哪几列 */
     lines: {
       type: Array,
-      default: () => [true, true, true, true, true, true, true, false],
+      default: () => [true, false, true, true, true, true, true, false],
     },
     showHead: {
       type: Boolean,

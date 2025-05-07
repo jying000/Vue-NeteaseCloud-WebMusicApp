@@ -10,7 +10,7 @@
 </template>
 <script>
 import { _Search } from "network/search";
-import { _getSongsDetail, songDetail } from "network/detail";
+import { _getSongsDetail, songDetail, songInfo } from "network/detail";
 import { search } from "mixin/components/search";
 import SongList from "common/song-list/song-list";
 
@@ -35,20 +35,33 @@ export default {
       if (this.keywords == "") return;
       this.musicList = [];
       _Search(this.keywords, this.searchType).then((res) => {
-        let list = res.data.result.songs;
+        let list = res.data.result;
         for (let i in list) {
-          _getSongsDetail(list[i].id).then((res) => {
-            let song = new songDetail(res.data.songs);
+            let song = new songInfo(list[i]);
             this.musicList.push(song);
+
             if (i == list.length - 1) {
-              this.songCount = this.musicList.length;
+              this.songCount = list.length;
               /**设置search-detail 搜索信息 */
               this.$emit("setData", this.songCount, "单曲");
               this.$nextTick(() => {
                 this.$emit("refresh");
               });
             }
-          });
+
+
+          // _getSongsDetail(list[i].id).then((res) => {
+          //   let song = new songDetail(res.data.songs);
+          //   this.musicList.push(song);
+          //   if (i == list.length - 1) {
+          //     this.songCount = list.length;
+          //     /**设置search-detail 搜索信息 */
+          //     this.$emit("setData", this.songCount, "单曲");
+          //     this.$nextTick(() => {
+          //       this.$emit("refresh");
+          //     });
+          //   }
+          // });
         }
       });
     },
